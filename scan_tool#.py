@@ -3,7 +3,14 @@ import os
 import pandas as pd
 import time
 
-Start_Path = r"C:\Windows"
+input_path = input("Gebe deinen Pfad ein:")
+check_path = os.path.exists(input_path)
+
+while check_path is False:
+    input_path = input("Pfad exestiert nicht. Bitte versuche es erneut.")
+
+Start_Path = input_path
+
 
 def get_Path(Start_Path):
     Path = []
@@ -23,12 +30,22 @@ def get_Time(Full_Path):
     return Time
 
 def get_Size(Full_Path):
-    Size = []
+    Size_Byte = []
     for file in Full_Path:
         get_Size = os.path.getsize(file)
-        Size.append(get_Size)
+        Size_Byte.append(get_Size)
 
-    return Size
+    return Size_Byte
+
+def convert_bytes(Full_Size_in_Byte):
+    converted_list = []
+    for size in Full_Size_in_Byte:
+        for unit in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+            if size < 1024:
+                converted_list.append(f"{size:.1f} {unit}")
+                break
+            size /= 1024
+    return converted_list
 
 def concat_data(Full_Path, Full_Time, Full_Size):
     Data_Concat = {
@@ -45,6 +62,7 @@ def write_excel(Data_Concat):
 
 Full_Path = get_Path(Start_Path)
 Full_Time = get_Time(Full_Path)
-Full_Size = get_Size(Full_Path)
-Data_Concat = concat_data(Full_Path, Full_Time, Full_Size)
+Full_Size_in_Byte = get_Size(Full_Path)
+Convert_Size = convert_bytes(Full_Size_in_Byte)
+Data_Concat = concat_data(Full_Path, Full_Time, Convert_Size)
 result_excel = write_excel(Data_Concat)
